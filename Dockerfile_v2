@@ -7,9 +7,6 @@ WORKDIR /app
 # Expose port 22 (mapped to 2222 on the host)
 EXPOSE 22
 
-# Start the SSH service
-CMD ["/usr/sbin/sshd", "-D"]
-
 
 # Install necessary packages for SSH, Microsoft SQL Server, and Boto
 RUN apt-get update && \
@@ -34,5 +31,5 @@ EXPOSE 22
 # Copy the application code into the container
 COPY . /app
 
-# Set the entry point (optional)
-CMD ["python", "app.py"]
+# Start the SSH service
+CMD ["/usr/sbin/sshd", "-D"]
