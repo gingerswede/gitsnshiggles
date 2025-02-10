@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  python-app:
+    image: python:3.9-slim
+    container_name: python_sql_server_container
+    restart: always  # Ensure the container starts on host reboot
+    environment:
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./host_folder:/container_folder  # Mapping specific folder from host to container
+      - python_packages:/usr/local/lib/python3.9/site-packages  # Persistence for installed Python packages
+    working_dir: /container_folder  # Directory to work from inside the container
+    ports:
+      - "2222:22"  # SSH Port Mapping (if you want to SSH into the container)
+    networks:
+      - my_network
+    command: bash -c "pip install boto boto3 pyodbc && tail -f /dev/null"  # Install dependencies and keep container running
+    stdin_open: true
+    tty: true  # Keep the terminal open for interaction
+
+volumes:
+  python_packages:  # This creates a persistent volume for Python packages
+
+networks:
+  my_network:  # This allows other containers to communicate with this container if needed
+    driver: bridge
