@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+  my_container:
+    image: python:3.9-slim  # Base image with Python 3
+    container_name: my_python_container
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./app:/app  # Mount the 'app' folder from host to container
+      - my_volume:/root/.ssh  # Named volume to persist SSH config (for example)
+      - /host/path/to/your/folder:/container/path/to/folder  # Additional folder mount example
+    environment:
+      - ENV_VAR_NAME=value
+    ports:
+      - "2222:22"  # Exposing SSH port 2222 on the host system
+    restart: always  # Ensures the container restarts on reboot or crash
+    networks:
+      - my_network
+
+volumes:
+  my_volume:
+    driver: local
+
+networks:
+  my_network:
+    driver: bridge

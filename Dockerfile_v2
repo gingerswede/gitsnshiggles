@@ -1,0 +1,46 @@
+# Use official Python 3 image as a base
+FROM python:3.9-slim
+
+# Set working directory in the container
+WORKDIR /app
+
+# Install OpenSSH server in the Docker container
+RUN apt-get update && \
+    apt-get install -y openssh-server && \
+    apt-get clean
+
+# Set up SSH configuration
+RUN mkdir -p /root/.ssh && chmod 700 /root/.ssh
+RUN echo 'root:rootpassword' | chpasswd  # Optionally, set root password
+
+# Expose port 22 (mapped to 2222 on the host)
+EXPOSE 22
+
+# Start the SSH service
+CMD ["/usr/sbin/sshd", "-D"]
+
+
+# Install necessary packages for SSH, Microsoft SQL Server, and Boto
+RUN apt-get update && \
+    apt-get install -y \
+    openssh-client \
+    curl \
+    apt-transport-https \
+    gnupg \
+    unixodbc-dev \
+    && apt-get clean
+
+# Install Python dependencies (boto, boto3, pymssql for SQL Server)
+RUN pip install --no-cache-dir boto boto3 pymssql
+
+# Set up the SSH configuration (if needed)
+RUN mkdir -p /root/.ssh && chmod 700 /root/.ssh
+
+# Expose port 22 for SSH (mapped to 2222 on host)
+EXPOSE 22
+
+# Copy the application code into the container
+COPY . /app
+
+# Set the entry point (optional)
+CMD ["python", "app.py"]
